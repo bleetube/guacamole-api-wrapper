@@ -1,3 +1,18 @@
+"""
+Copyright 2020 Augusta University
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 import socket
 import requests
 import urllib3
@@ -7,11 +22,12 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 socket.setdefaulttimeout(0.5)
 
 class session:
-    def __init__(self, host: str, data_source: str, username: str, password: str):
+    def __init__(self, host: str, data_source: str, username: str, password: str, verify: bool = False):
         self.host = host
         self.username = username
         self.password = password
         self.data_source = data_source
+        self.verify = verify
         self.token = self.generate_token()
         self.params = {"token": self.token}
 
@@ -21,7 +37,7 @@ class session:
         return requests.post(
             f"{self.host}/api/tokens",
             data={"username": self.username, "password": self.password},
-            verify=False,
+            verify=self.verify,
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         ).json()['authToken']
 
@@ -31,7 +47,7 @@ class session:
         return requests.delete(
             f"{self.host}/api/tokens/{self.token}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         )
 
     def list_schema_users(self):
@@ -40,7 +56,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/schema/userAttributes",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_schema_groups(self):
@@ -49,7 +65,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/schema/userGroupAttributes",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_schema_connections(self):
@@ -58,7 +74,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/schema/connectionAttributes",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_schema_sharing(self):
@@ -67,7 +83,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/schema/sharingProfileAttributes",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_schema_connection_group(self):
@@ -76,7 +92,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/schema/connectionGroupAttributes",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_schema_protocols(self):
@@ -85,7 +101,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/schema/protocols",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_patches(self):
@@ -97,7 +113,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/patches",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
 
@@ -107,7 +123,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/languages",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_extensions(self):
@@ -119,7 +135,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/ext/{self.data_source}",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_history_users(self):
@@ -128,7 +144,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/history/users",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_history_connections(self):
@@ -137,7 +153,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/history/connections",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def list_users(self):
@@ -146,7 +162,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/users",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_user(self, username: str):
@@ -155,7 +171,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/users/{username}",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_user_permissions(self, username: str):
@@ -164,7 +180,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/users/{username}/permissions",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_user_effective_permissions(self, username: str):
@@ -173,7 +189,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/users/{username}/effectivePermissions",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_user_groups(self, username: str):
@@ -182,7 +198,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/users/{username}/userGroups",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_user_history(self, username: str):
@@ -191,7 +207,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/users/{username}/history",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def detail_self(self):
@@ -200,7 +216,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/self",
             params=self.params,
-            verify=False
+            verify=self.verify
         ).json(), indent=2)
 
     def create_user(self, username: str, password: str, attributes: dict = {}):
@@ -209,7 +225,7 @@ class session:
         return requests.post(
             f"{self.host}/api/session/data/{self.data_source}/users",
             headers={"Content-Type": "application/json"},
-            verify=False,
+            verify=self.verify,
             params=self.params,
             json={
                 "username": username,
@@ -252,7 +268,34 @@ class session:
                     "valid-from": attributes.get("valid-from", "")
                 }
             },
-            verify=False,
+            verify=self.verify,
+        )
+
+    def reset_user_password(self, username: str, newpassword: str, attributes: dict = {}):
+        """Resets a user's pasword"""
+
+        return requests.put(
+            f"{self.host}/api/session/data/{self.data_source}/users/{username}",
+            headers={"Content-Type": "application/json"},
+            params=self.params,
+            json={
+                "username": username,
+                "attributes": {
+                    "guac-email-address": attributes.get("guac-email-address", None),
+                    "guac-organizational-role": attributes.get("guac-organizational-role", None),
+                    "guac-full-name": attributes.get("guac-full-name", None),
+                    "expired": attributes.get("expired", ""),
+                    "timezone": attributes.get("timezone", None),
+                    "access-window-start": attributes.get("access-window-start", ""),
+                    "guac-organization": attributes.get("guac-organization", None),
+                    "access-window-end": attributes.get("access-window-end", ""),
+                    "disabled": attributes.get("disabled", ""),
+                    "valid-until": attributes.get("valid-until", ""),
+                    "valid-from": attributes.get("valid-from", "")
+                },
+                "password": newpassword,
+            },
+            verify=self.verify,
         )
 
     def update_user_password(self, username: str, oldpassword: str, newpassword: str):
@@ -266,7 +309,7 @@ class session:
                 "oldPassword": oldpassword,
                 "newPassword": newpassword
             },
-            verify=False,
+            verify=self.verify,
         )
 
     def update_user_group(self, username: str, groupname: str, operation: str = "add"):
@@ -284,7 +327,7 @@ class session:
                         "value": groupname
                     }
                 ],
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -312,7 +355,7 @@ class session:
                         "value": "READ"
                     }
                 ],
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -378,7 +421,7 @@ class session:
                 headers={"Content-Type": "application/json"},
                 params=self.params,
                 json=permissions,
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -389,7 +432,7 @@ class session:
         return requests.delete(
             f"{self.host}/api/session/data/{self.data_source}/users/{username}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         )
 
     def list_usergroups(self):
@@ -398,7 +441,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/userGroups",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         ).json(), indent=2)
 
     def detail_usergroup(self, groupname: str):
@@ -407,7 +450,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/userGroups/{groupname}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         ).json(), indent=2)
 
     def update_usergroup_member(self, username: str, groupname: str, operation: str = "add"):
@@ -425,7 +468,7 @@ class session:
                         "value": username
                     }
                 ],
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -445,7 +488,7 @@ class session:
                         "value": str(identifier)
                     }
                 ],
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -465,7 +508,7 @@ class session:
                         "value": str(identifier)
                     }
                 ],
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -529,7 +572,7 @@ class session:
                 headers={"Content-Type": "application/json"},
                 params=self.params,
                 json=permissions,
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -549,7 +592,7 @@ class session:
                         "value": "READ"
                     }
                 ],
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid Operation, requires (add or remove)"
@@ -567,7 +610,7 @@ class session:
                     "disabled": attributes.get("disabled", "")
                 }
             },
-            verify=False,
+            verify=self.verify,
         )
 
     def update_usergroup(self, groupname: str, attributes: dict = {}):
@@ -583,7 +626,7 @@ class session:
                     "disabled": attributes.get("disabled", "")
                 }
             },
-            verify=False,
+            verify=self.verify,
         )
 
     def delete_usergroup(self, user_group: str):
@@ -592,7 +635,7 @@ class session:
         return requests.delete(
             f"{self.host}/api/session/data/{self.data_source}/userGroups/{user_group}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         )
 
     def list_tunnels(self):
@@ -600,7 +643,7 @@ class session:
 
         return json.dumps(requests.get(
             f"{self.host}/api/session/tunnels",
-            verify=False,
+            verify=self.verify,
             params=self.params,
         ).json(), indent=2)
 
@@ -609,7 +652,7 @@ class session:
 
         return json.dumps(requests.get(
             f"{self.host}/api/session/tunnels/{str(tunnel_id)}/activeConnection/connection/sharingProfiles",
-            verify=False,
+            verify=self.verify,
             params=self.params,
         ).json(), indent=2)
 
@@ -626,7 +669,7 @@ class session:
 
         return json.dumps(requests.get(
             host,
-            verify=False,
+            verify=self.verify,
             params=self.params,
         ).json(), indent=2)
 
@@ -649,7 +692,7 @@ class session:
 
         return json.dumps(requests.get(
             host,
-            verify=False,
+            verify=self.verify,
             params=self.params,
         ).json(), indent=2)
 
@@ -666,7 +709,7 @@ class session:
                     "path": f"/{connection_id}"
                 }
             ],
-            verify=False,
+            verify=self.verify,
         )
 
     def manage_connection(self, request: str, type: str, name: str, parent_identifier: int, identifier: int = None, parameters: dict = {}, attributes: dict = {}):
@@ -954,7 +997,7 @@ class session:
                 headers={"Content-Type": "application/json"},
                 params=self.params,
                 json=json,
-                verify=False,
+                verify=self.verify,
             )
         elif request == "put":
             return requests.put(
@@ -962,7 +1005,7 @@ class session:
                 headers={"Content-Type": "application/json"},
                 params=self.params,
                 json=json,
-                verify=False,
+                verify=self.verify,
             )
         else:
             return "Invalid request option, requires (post or put)"
@@ -973,7 +1016,7 @@ class session:
         return requests.delete(
             f"{self.host}/api/session/data/{self.data_source}/connections/{str(identifier)}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         )
 
     def list_connection_groups(self):
@@ -982,7 +1025,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/connectionGroups",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         ).json(), indent=2)
 
     def list_connection_group_connections(self):
@@ -991,7 +1034,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/connectionGroups/ROOT/tree",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         ).json(), indent=2)
 
     def details_connection_group(self, identifier: str):
@@ -1000,7 +1043,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/connectionGroups/{identifier}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         ).json(), indent=2)
 
     def details_connection_group_connections(self, identifier: str):
@@ -1009,7 +1052,7 @@ class session:
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/connectionGroups/{identifier}/tree",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         ).json(), indent=2)
 
     def create_connection_group(self, name: str, type: str, parent_identifier: int = None, attributes: dict = {}):
@@ -1029,7 +1072,7 @@ class session:
                     "enable-session-affinity": attributes.get("enable-session-affinity", "")
                 }
             },
-            verify=False,
+            verify=self.verify,
         )
 
     def update_connection_group(self, identifier: str, name: str, type: str, parent_identifier: int = None, attributes: dict = {}):
@@ -1053,7 +1096,7 @@ class session:
                     "enable-session-affinity": attributes.get("enable-session-affinity", "")
                 }
             },
-            verify=False,
+            verify=self.verify,
         )
 
     def delete_connection_group(self, connection_group: str):
@@ -1062,7 +1105,7 @@ class session:
         return requests.delete(
             f"{self.host}/api/session/data/{self.data_source}/connectionGroups/{connection_group}",
             params=self.params,
-            verify=False,
+            verify=self.verify,
         )
 
     def list_sharing_profile(self):
@@ -1070,7 +1113,7 @@ class session:
 
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/sharingProfiles",
-            verify=False,
+            verify=self.verify,
             params=self.params,
         ).json(), indent=2)
 
@@ -1079,7 +1122,7 @@ class session:
 
         return json.dumps(requests.get(
             f"{self.host}/api/session/data/{self.data_source}/sharingProfiles/{str(sharing_id)}",
-            verify=False,
+            verify=self.verify,
             params=self.params,
         ).json(), indent=2)
 
@@ -1089,7 +1132,7 @@ class session:
         return requests.post(
             f"{self.host}/api/session/data/{self.data_source}/sharingProfiles",
             headers={"Content-Type": "application/json"},
-            verify=False,
+            verify=self.verify,
             params=self.params,
             json={
                 "primaryConnectionIdentifier": str(identifier),
@@ -1107,6 +1150,6 @@ class session:
         return requests.delete(
             f"{self.host}/api/session/data/{self.data_source}/sharingProfiles/{str(identifier)}",
             headers={"Content-Type": "application/json"},
-            verify=False,
+            verify=self.verify,
             params=self.params,
         )
